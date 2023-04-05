@@ -11,7 +11,7 @@ class Slider(ttk.Frame):
             from_: tk.IntVar = None,
             to: tk.IntVar = None,
             label: str = 'Slider',
-    ):
+    ) -> None:
         super().__init__(master, style='Slider.TFrame')
 
         self.variable: tk.IntVar = variable if variable is not None else tk.IntVar(value=0)
@@ -37,28 +37,28 @@ class Slider(ttk.Frame):
         self.__layout()
         self.__bind()
 
-    def __layout(self):
+    def __layout(self) -> None:
         self.heading.pack(side='top', anchor='w')
         self.min_label.pack(side='left', anchor='s')
         self.scale.pack(side='left', fill=tk.X, expand=True)
         self.max_label.pack(side='left', anchor='s')
 
-    def __bind(self):
+    def __bind(self) -> None:
         self.from_.trace_add('write', self.__update_min_bound)
         self.to.trace_add('write', self.__update_max_bound)
 
-    def __update_variable(self, value):
-        self.variable.set(value)
+    def __update_variable(self, value: str) -> None:
+        self.variable.set(int(value))
 
-    def __update_min_bound(self, *_args):
+    def __update_min_bound(self, *_args) -> None:
         self.scale.config(from_=self.from_.get())
 
-    def __update_max_bound(self, *_args):
+    def __update_max_bound(self, *_args) -> None:
         self.scale.config(to=self.to.get())
 
 
 class Splitter(ttk.Frame):
-    def __init__(self, master: tk.Misc = None):
+    def __init__(self, master: tk.Misc = None) -> None:
         super().__init__(master)
 
         self.canvas = tk.Canvas(self, **splitter_style)

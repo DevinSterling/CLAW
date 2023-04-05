@@ -5,7 +5,7 @@ from src.ui.style import panned_window_style, button_style, serial_text_style
 
 
 class App(tk.Frame):
-    def __init__(self, master: tk.Misc = None):
+    def __init__(self, master: tk.Misc = None) -> None:
         super().__init__(master)
 
         # Observable variables
@@ -22,7 +22,11 @@ class App(tk.Frame):
         # build the user interface
         self.__build()
 
-    def __build(self):
+    def __build(self) -> None:
+        """
+        Build the user interface
+        :return: None
+        """
         pane = tk.PanedWindow(self, **panned_window_style)
         pane.pack(fill=tk.BOTH, expand=True)
         pane.add(self.__build_controls())
@@ -30,7 +34,7 @@ class App(tk.Frame):
 
         self.pack(fill=tk.BOTH, expand=True)
 
-    def __build_controls(self):
+    def __build_controls(self) -> ttk.Frame:
         frame = ttk.Frame(self, style='TFrame')
         frame.pack(fill=tk.BOTH, expand=True)
 
@@ -70,7 +74,7 @@ class App(tk.Frame):
 
         return frame
 
-    def __build_serial_out(self):
+    def __build_serial_out(self) -> ttk.Frame:
         frame = ttk.Frame(self, style='Serial.TFrame')
         frame.pack()
 
@@ -81,7 +85,7 @@ class App(tk.Frame):
 
         return frame
 
-    def serial_in(self, message: str):
+    def serial_in(self, message: str) -> None:
         self.serial_output.config(state=tk.NORMAL)
         self.serial_output.insert(tk.END, message)
         self.serial_output.config(state=tk.DISABLED)
