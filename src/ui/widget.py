@@ -33,27 +33,36 @@ class Slider(ttk.Frame):
             **slider_style,
         )
 
-        # Layout
-        self.__layout()
+        # Build and bind
+        self.__build()
         self.__bind()
 
-    def __layout(self) -> None:
+    def __build(self) -> None:
+        """Construct the layout of the slider"""
         self.heading.pack(side='top', anchor='w')
         self.min_label.pack(side='left', anchor='s')
         self.scale.pack(side='left', fill=tk.X, expand=True)
         self.max_label.pack(side='left', anchor='s')
 
     def __bind(self) -> None:
+        """Setup listeners and associated actions."""
         self.from_.trace_add('write', self.__update_min_bound)
         self.to.trace_add('write', self.__update_max_bound)
 
     def __update_variable(self, value: str) -> None:
+        """
+        Update the slider `variable`.
+
+        :param str value: Value to set the slider `variable` to.
+        """
         self.variable.set(int(value))
 
     def __update_min_bound(self, *_args) -> None:
+        """Update slider minimum bound."""
         self.scale.config(from_=self.from_.get())
 
     def __update_max_bound(self, *_args) -> None:
+        """Update slider maximum bound."""
         self.scale.config(to=self.to.get())
 
 

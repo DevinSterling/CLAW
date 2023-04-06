@@ -1,10 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
+from datetime import datetime
+from src.core.servo import Servo
+from src.core.communicator import Communicator
 from src.ui.widget import Slider, Splitter
 from src.ui.style import panned_window_style, button_style, serial_text_style
 
 
 class App(tk.Frame):
+    """Simple Application logic container"""
     def __init__(self, master: tk.Misc = None) -> None:
         super().__init__(master)
 
@@ -12,6 +16,9 @@ class App(tk.Frame):
         self.min_bound: tk.IntVar = tk.IntVar(value=0)
         self.max_bound: tk.IntVar = tk.IntVar(value=180)
         self.servo_control: tk.IntVar = tk.IntVar(value=0)
+
+        # Core components
+        self.servo = Servo(self.servo_control, Communicator(self.serial_in))
 
         # Widgets
         self.min_bound_slider: Slider
@@ -21,12 +28,10 @@ class App(tk.Frame):
 
         # build the user interface
         self.__build()
+        self.__bind()
 
     def __build(self) -> None:
-        """
-        Build the user interface
-        :return: None
-        """
+        """Construct the user interface."""
         pane = tk.PanedWindow(self, **panned_window_style)
         pane.pack(fill=tk.BOTH, expand=True)
         pane.add(self.__build_controls())
@@ -35,6 +40,11 @@ class App(tk.Frame):
         self.pack(fill=tk.BOTH, expand=True)
 
     def __build_controls(self) -> ttk.Frame:
+        """
+        Construct the servo controls.
+
+        :returns: Frame containing the servo controls.
+        """
         frame = ttk.Frame(self, style='TFrame')
         frame.pack(fill=tk.BOTH, expand=True)
 
@@ -75,6 +85,11 @@ class App(tk.Frame):
         return frame
 
     def __build_serial_out(self) -> ttk.Frame:
+        """
+        Construct the in-application console.
+
+        :returns: Frame containing the console.
+        """
         frame = ttk.Frame(self, style='Serial.TFrame')
         frame.pack()
 
@@ -85,7 +100,21 @@ class App(tk.Frame):
 
         return frame
 
+    def __bind(self) -> None:
+        """Setup listeners and associated actions."""
+        self.min_bound_slider.scale.bind('<ButtonRelease-1>', lambda _: self.servo.set_min(self.min_bound.get()))
+        self.max_bound_slider.scale.bind('<ButtonRelease-1>', lambda _: self.servo.set_max(self.max_bound.get()))
+        self.servo_control.trace_add('write', lambda *_: self.servo.set(self.servo_control.get()))
+
     def serial_in(self, message: str) -> None:
+        """
+        Shows the provided `message` in the application console
+        paired with the current timestamp.
+
+        :param str message: Message to show in console
+        """
+        time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.serial_output.config(state=tk.NORMAL)
-        self.serial_output.insert(tk.END, message)
+        self.serial_output.insert(tk.END, f'[{time}]\t{message}')
         self.serial_output.config(state=tk.DISABLED)
+        self.serial_output.see(tk.END)
