@@ -3,22 +3,20 @@ from tkinter import ttk
 from datetime import datetime
 from src.core.servo import Servo
 from src.core.communicator import Communicator
+from src.core.connection import Connection
 from src.ui.widget import Slider, Splitter
 from src.ui.style import panned_window_style, button_style, serial_text_style
 
 
 class App(tk.Frame):
     """Simple Application logic container"""
-    def __init__(self, master: tk.Misc = None) -> None:
+    def __init__(self, master: tk.Misc = None, port: str = 'COM4', baudrate: int = 9600) -> None:
         super().__init__(master)
 
         # Observable variables
         self.min_bound: tk.IntVar = tk.IntVar(value=0)
         self.max_bound: tk.IntVar = tk.IntVar(value=180)
         self.servo_control: tk.IntVar = tk.IntVar(value=0)
-
-        # Core components
-        self.servo = Servo(self.servo_control, Communicator(self.serial_in))
 
         # Widgets
         self.min_bound_slider: Slider
@@ -29,6 +27,9 @@ class App(tk.Frame):
         # build the user interface
         self.__build()
         self.__bind()
+
+        # Core components
+        self.servo = Servo(self.servo_control, Communicator(self.serial_in, Connection(port, baudrate)))
 
     def __build(self) -> None:
         """Construct the user interface."""
@@ -105,6 +106,11 @@ class App(tk.Frame):
         self.min_bound_slider.scale.bind('<ButtonRelease-1>', lambda _: self.servo.set_min(self.min_bound.get()))
         self.max_bound_slider.scale.bind('<ButtonRelease-1>', lambda _: self.servo.set_max(self.max_bound.get()))
         self.servo_control.trace_add('write', lambda *_: self.servo.set(self.servo_control.get()))
+        self.master.protocol('WM_DELETE_WINDOW', self.__stop)
+
+    def __stop(self) -> None:
+        self.servo.communicator.connection.stop()
+        self.master.destroy()
 
     def serial_in(self, message: str) -> None:
         """
@@ -113,8 +119,12 @@ class App(tk.Frame):
 
         :param str message: Message to show in console
         """
+        # Add newline if necessary
+        newline = '\n' if not message.endswith('\n') else ''
+        # Get timestamp
         time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
         self.serial_output.config(state=tk.NORMAL)
-        self.serial_output.insert(tk.END, f'[{time}]\t{message}')
+        self.serial_output.insert(tk.END, f'[{time}]\t{message}{newline}')
         self.serial_output.config(state=tk.DISABLED)
         self.serial_output.see(tk.END)

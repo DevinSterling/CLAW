@@ -18,7 +18,6 @@ serial_text_style = {
     'foreground': PRIMARY_FG,
     'border': 0,
     'padx': 10,
-    'pady': 10,
     'insertbackground': PRIMARY_FG,
 }
 button_style = {

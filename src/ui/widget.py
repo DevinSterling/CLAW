@@ -7,16 +7,17 @@ class Slider(ttk.Frame):
     def __init__(
             self,
             master: tk.Misc = None,
-            variable: tk.IntVar = None,
-            from_: tk.IntVar = None,
-            to: tk.IntVar = None,
+            variable: tk.IntVar = tk.IntVar(value=0),
+            from_: tk.IntVar = tk.IntVar(value=0),
+            to: tk.IntVar = tk.IntVar(value=180),
             label: str = 'Slider',
     ) -> None:
         super().__init__(master, style='Slider.TFrame')
 
-        self.variable: tk.IntVar = variable if variable is not None else tk.IntVar(value=0)
-        self.from_: tk.IntVar = from_ if from_ is not None else tk.IntVar(value=0)
-        self.to: tk.IntVar = to if to is not None else tk.IntVar(value=180)
+        # Observable variables
+        self.variable: tk.IntVar = variable
+        self.from_: tk.IntVar = from_
+        self.to: tk.IntVar = to
 
         # Labels
         self.heading: ttk.Label = ttk.Label(self, text=label, style='Heading2.TLabel')
