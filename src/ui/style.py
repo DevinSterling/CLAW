@@ -16,6 +16,8 @@ serial_text_style = {
     'wrap': tk.WORD,
     'background': '#000',
     'foreground': PRIMARY_FG,
+    'selectbackground': '#fa0',
+    'selectforeground': 'black',
     'border': 0,
     'padx': 10,
     'insertbackground': PRIMARY_FG,

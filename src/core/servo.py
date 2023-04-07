@@ -1,13 +1,23 @@
 from tkinter import IntVar
-from src.core.communicator import Communicator
+from src.core.connection import Connection
 
 
 class Servo:
-    def __init__(self, angle: IntVar, communicator: Communicator) -> None:
+    def __init__(self, angle: IntVar, min: IntVar, max: IntVar, connection: Connection) -> None:
         # Current servo angle
         self.angle = angle
-        # Communication between Application and Arduino
-        self.communicator = communicator
+        self.min = min
+        self.max = max
+        # Connection between Application and Arduino
+        self.connection = connection
+
+    def auto(self):
+        temp = self.angle.get()
+        min = self.min.get()
+        max = self.max.get()
+
+        self.connection.call(f'AUTO:\n')
+        self.angle.set(min if (temp - min) >= (max - temp) else max)
 
     def set(self, value: int) -> None:
         """
@@ -15,7 +25,7 @@ class Servo:
 
         :param int value: Specified angle to set.
         """
-        self.communicator.trigger(f'SET {value}')
+        self.connection.call(f'SET:{value}:\n')
 
     def set_min(self, value: int) -> None:
         """
@@ -23,7 +33,7 @@ class Servo:
 
         :param int value: Specified minimum bound.
         """
-        self.communicator.trigger(f'SET MIN {value}')
+        self.connection.call(f'MIN:{value}:\n')
 
     def set_max(self, value: int) -> None:
         """
@@ -31,4 +41,4 @@ class Servo:
 
         :param int value: Specified maximum bound.
         """
-        self.communicator.trigger(f'SET MAX {value}')
+        self.connection.call(f'MAX:{value}:\n')

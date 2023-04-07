@@ -2,15 +2,15 @@ import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
 from src.core.servo import Servo
-from src.core.communicator import Communicator
 from src.core.connection import Connection
 from src.ui.widget import Slider, Splitter
+from src.ui.const import BANNER
 from src.ui.style import panned_window_style, button_style, serial_text_style
 
 
 class App(tk.Frame):
     """Simple Application logic container"""
-    def __init__(self, master: tk.Misc = None, port: str = 'COM4', baudrate: int = 9600) -> None:
+    def __init__(self, master: tk.Misc = None, port: str = 'COM3', baudrate: int = 9600) -> None:
         super().__init__(master)
 
         # Observable variables
@@ -22,6 +22,7 @@ class App(tk.Frame):
         self.min_bound_slider: Slider
         self.max_bound_slider: Slider
         self.servo_control_slider: Slider
+        self.servo_auto_button: tk.Button
         self.serial_output: tk.Text
 
         # build the user interface
@@ -29,7 +30,12 @@ class App(tk.Frame):
         self.__bind()
 
         # Core components
-        self.servo = Servo(self.servo_control, Communicator(self.serial_in, Connection(port, baudrate)))
+        self.servo = Servo(
+            self.servo_control,
+            self.min_bound,
+            self.max_bound,
+            Connection(self.serial_in, port, baudrate),
+        )
 
     def __build(self) -> None:
         """Construct the user interface."""
@@ -56,8 +62,8 @@ class App(tk.Frame):
         ttk.Label(header, text='Controls', style='Heading.TLabel').pack(side=tk.LEFT, fill=tk.X, expand=True)
 
         # Button to trigger opening/retraction of the servo
-        action_button = tk.Button(header, text='⭍', **button_style)
-        action_button.pack(side=tk.LEFT, fill=tk.X)
+        self.servo_auto_button = tk.Button(header, text='⭍', **button_style)
+        self.servo_auto_button.pack(side=tk.LEFT, fill=tk.X)
 
         # Container to encompass slider controls
         container = ttk.Frame(frame, padding=(15, 15, 15, 0))
@@ -97,6 +103,7 @@ class App(tk.Frame):
         # Frame label
         self.serial_output = tk.Text(frame, **serial_text_style)
         self.serial_output.pack(fill=tk.BOTH, expand=True)
+        self.serial_output.insert(tk.END, BANNER)
         self.serial_in('** Arduino Serial Output **\n')
 
         return frame
@@ -106,10 +113,11 @@ class App(tk.Frame):
         self.min_bound_slider.scale.bind('<ButtonRelease-1>', lambda _: self.servo.set_min(self.min_bound.get()))
         self.max_bound_slider.scale.bind('<ButtonRelease-1>', lambda _: self.servo.set_max(self.max_bound.get()))
         self.servo_control.trace_add('write', lambda *_: self.servo.set(self.servo_control.get()))
+        self.servo_auto_button.bind('<ButtonRelease-1>', lambda _: self.servo.auto())
         self.master.protocol('WM_DELETE_WINDOW', self.__stop)
 
     def __stop(self) -> None:
-        self.servo.communicator.connection.stop()
+        self.servo.connection.stop()
         self.master.destroy()
 
     def serial_in(self, message: str) -> None:
