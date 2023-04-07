@@ -10,7 +10,7 @@ from src.ui.style import panned_window_style, button_style, serial_text_style
 
 class App(tk.Frame):
     """Simple Application logic container"""
-    def __init__(self, master: tk.Misc = None, port: str = 'COM3', baudrate: int = 9600) -> None:
+    def __init__(self, master: tk.Misc = None, port: str = 'COM3', baud_rate: int = 9600) -> None:
         super().__init__(master)
 
         # Observable variables
@@ -34,7 +34,7 @@ class App(tk.Frame):
             self.servo_control,
             self.min_bound,
             self.max_bound,
-            Connection(self.serial_in, port, baudrate),
+            Connection(self.serial_in, port, baud_rate),
         )
 
     def __build(self) -> None:
@@ -117,7 +117,7 @@ class App(tk.Frame):
         self.master.protocol('WM_DELETE_WINDOW', self.__stop)
 
     def __stop(self) -> None:
-        self.servo.connection.stop()
+        self.servo.connection.close()
         self.master.destroy()
 
     def serial_in(self, message: str) -> None:
