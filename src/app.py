@@ -10,7 +10,7 @@ from src.ui.style import panned_window_style, button_style, serial_text_style
 
 class App(tk.Frame):
     """Simple Application logic container"""
-    def __init__(self, master: tk.Misc = None, port: str = 'COM3', baud_rate: int = 9600) -> None:
+    def __init__(self, port: str, baud_rate: int, master: tk.Misc = None) -> None:
         super().__init__(master)
 
         # Observable variables
