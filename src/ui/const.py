@@ -1,5 +1,9 @@
-# UI Constants
+# Servo Constants
+MIN_ANGLE: int = 0
+MAX_ANGLE: int = 180
+DEFAULT_ANGLE: int = 90
 
+# UI Constants
 # Font
 PRIMARY_FONT: str = 'Helvetica'
 

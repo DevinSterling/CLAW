@@ -4,7 +4,7 @@ from datetime import datetime
 from src.core.servo import Servo
 from src.core.connection import Connection
 from src.ui.widget import Slider, Splitter
-from src.ui.const import BANNER
+from src.ui.const import DEFAULT_ANGLE, MAX_ANGLE, MIN_ANGLE, BANNER
 from src.ui.style import panned_window_style, button_style, serial_text_style
 
 
@@ -14,9 +14,9 @@ class App(tk.Frame):
         super().__init__(master)
 
         # Observable variables
-        self.min_bound: tk.IntVar = tk.IntVar(value=0)
-        self.max_bound: tk.IntVar = tk.IntVar(value=180)
-        self.servo_control: tk.IntVar = tk.IntVar(value=0)
+        self.min_bound = tk.IntVar(value=MIN_ANGLE)
+        self.max_bound = tk.IntVar(value=MAX_ANGLE)
+        self.servo_control = tk.IntVar(value=DEFAULT_ANGLE)
 
         # Widgets
         self.min_bound_slider: Slider

@@ -15,17 +15,17 @@ class Slider(ttk.Frame):
         super().__init__(master, style='Slider.TFrame')
 
         # Observable variables
-        self.variable: tk.IntVar = variable
-        self.from_: tk.IntVar = from_
-        self.to: tk.IntVar = to
+        self.variable = variable
+        self.from_ = from_
+        self.to = to
 
         # Labels
-        self.heading: ttk.Label = ttk.Label(self, text=label, style='Heading2.TLabel')
-        self.min_label: ttk.Label = ttk.Label(self, textvariable=self.from_, padding=(0, 0, 8, 0))
-        self.max_label: ttk.Label = ttk.Label(self, textvariable=self.to, padding=(8, 0, 0, 0))
+        self.heading = ttk.Label(self, text=label, style='Heading2.TLabel')
+        self.min_label = ttk.Label(self, textvariable=self.from_, padding=(0, 0, 8, 0))
+        self.max_label = ttk.Label(self, textvariable=self.to, padding=(8, 0, 0, 0))
 
         # Scale
-        self.scale: tk.Scale = tk.Scale(
+        self.scale = tk.Scale(
             self,
             variable=self.variable,
             from_=self.from_.get(),
@@ -33,6 +33,7 @@ class Slider(ttk.Frame):
             command=self.__update_variable,
             **slider_style,
         )
+        self.scale.bind('<MouseWheel>', self.__update_scroll)
 
         # Build and bind
         self.__build()
@@ -46,7 +47,12 @@ class Slider(ttk.Frame):
         self.max_label.pack(side='left', anchor='s')
 
     def __bind(self) -> None:
-        """Setup listeners and associated actions."""
+        """
+        Setup listeners and associated actions.
+
+        Listens for any changes to `from_` and `to` to update
+        the current slider appropriately.
+        """
         self.from_.trace_add('write', self.__update_min_bound)
         self.to.trace_add('write', self.__update_max_bound)
 
@@ -57,6 +63,18 @@ class Slider(ttk.Frame):
         :param str value: Value to set the slider `variable` to.
         """
         self.variable.set(int(value))
+
+    def __update_scroll(self, event: tk.Event) -> None:
+        """
+        Function to alter the slider using the scroll wheel.
+
+        :param event: Scroll event information to determine which
+        direction to scroll.
+        """
+        if event.delta < 0:
+            self.scale.set(self.scale.get() + 2)
+        else:
+            self.scale.set(self.scale.get() - 2)
 
     def __update_min_bound(self, *_args) -> None:
         """Update slider minimum bound."""

@@ -3,21 +3,21 @@ from src.core.connection import Connection
 
 
 class Servo:
-    def __init__(self, angle: IntVar, min: IntVar, max: IntVar, connection: Connection) -> None:
+    def __init__(self, angle: IntVar, min_: IntVar, max_: IntVar, connection: Connection) -> None:
         # Current servo angle
         self.angle = angle
-        self.min = min
-        self.max = max
+        self.min = min_
+        self.max = max_
         # Connection between Application and Arduino
         self.connection = connection
 
     def auto(self):
         temp = self.angle.get()
-        min = self.min.get()
-        max = self.max.get()
+        min_ = self.min.get()
+        max_ = self.max.get()
 
         self.connection.call(f'AUTO:\n')
-        self.angle.set(min if (temp - min) >= (max - temp) else max)
+        self.angle.set(min_ if (temp - min_) >= (max_ - temp) else max_)
 
     def set(self, value: int) -> None:
         """
