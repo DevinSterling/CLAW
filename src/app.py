@@ -110,8 +110,8 @@ class App(tk.Frame):
 
     def __bind(self) -> None:
         """Setup listeners and associated actions."""
-        self.min_bound_slider.scale.bind('<ButtonRelease-1>', lambda _: self.servo.set_min(self.min_bound.get()))
-        self.max_bound_slider.scale.bind('<ButtonRelease-1>', lambda _: self.servo.set_max(self.max_bound.get()))
+        self.min_bound.trace_add('write', lambda *_: self.servo.set_min(self.min_bound.get()))
+        self.max_bound.trace_add('write', lambda *_: self.servo.set_max(self.max_bound.get()))
         self.servo_control.trace_add('write', lambda *_: self.servo.set(self.servo_control.get()))
         self.servo_auto_button.bind('<ButtonRelease-1>', lambda _: self.servo.auto())
         self.master.protocol('WM_DELETE_WINDOW', self.__stop)
